@@ -1,0 +1,61 @@
+Lists functionality
+
+USER STORY
+==========
+Leo from the University of Lichtenstein is excited about the new CMT. It has made tracking his students across all the three universities of his country. However, Leo also wants the CMT to be able to send emails to his involved students. So far his ministry has been using google groups, but that involves keeping a seperate list up-to-date, and invariably it gets out of sync. Can the CMT handle the mailing list for him, he wonders?
+
+We'd like to be able to say yes to Leo. To get first stage functionality up and running, we can settle for the directory's mass-export tool to generate a list of all his students with email addresses included. Then he can plug those email addresses into his mail client of choice and be on his way. It may be nice to have the CMT template engine write mail-merge emails for him, but we'd settle for a mass-export option that includes just email addresses for now.
+
+Leo points out a problem though – if the list is for ALL his students, well, the non-Christians his ministry has involved in evangelistic groups aren't so keen on getting “spam” about all the Christian activities being run. Can they be excluded? “Sure!” we tell Leo, if we could create a search for everyone who considers themselves a Christian, that would take care of itself. Creating a checklist on a user's profile which tracks their existence or lack of faith would do the trick. Now do you declare “are a Christian/not a Christian” from the leadership point of view, or the client's? Having hidden attributes and deciding at what level that attribute should become visible might be more involved than we want (KISS*). So let's have an attribute from the client's perspective “Would you call yourself a follower of Jesus?” (default on new account creation = yes)
+
+But Leo's quest to exclude a certain category doesn't end there. He thinks of three other special cases where particular students have requested to be taken off his weekly mailing list. What to do? The KISS principle is obviously telling us not to cater for every such contingency. Instead, let's turn our minds to the task of building List Functionality, a versitile way of catering for multiple potential scenarios.
+
+A list is like a customisable search, but it allows dynamic selections (e.g. “Find all students from all three campuses”) to be combined with a static selection (e.g. “And remove users 14, 56, and 201”), or other pre-defined lists (e.g. “And remove anyone who doesn't call themselves a Christian”).
+
+The anatomy of a list object looks like this
+============================================
+Required: Name, Owner, Viewable attributes (who can see/access it)
+Optional: Dynamic search string, static selection array, boolean flag for static selection (where to add or remove those listed in the static selection), List1, List2, boolean flag for List1, boolean flag for List2.
+
+USER STORY
+==========
+Staff Worker A compiles a list of students who want to join the student leadership next year. Staff workers B and C do the same. We want to compile these three lists.
+
+List A: Staff Worker A simply provides a static selection of students. List B and C are the same for staff workers B and C respectively.
+Leo creates List D, and defines List1 as “List A” and the List_1_boolean as “OR”. Defines List2 as “List B” and List_2_boolean as “OR”. List D will now be a blank selection (no dynamic or static selection was made), and will do a set union with List A, then a set union of that result with List B. The result will be all members of List A and List B with any overlapping members included just once.
+How are included members included just once? It may seem trivial, but we'll see in a moment that the dynamic is important. Each list produces as output a static selection of members. All List D sees is an array of userIDs generated from ListA and ListB. These combinations are then inserted into a new array. key=UserID, value = boolean. Users added in both listsA and B merely set the same key-value pair.
+Now Leo Creates List “Final”, which includes List D and List C, to finally give him the wanted combination of Lists A,B and C.
+
+But let's go a step deeper.
+What if Staff worker A decided to compile their List A through a combination of steps? First they do a dynamic search for everyone for whom they are an RP. Then they want to de-select students who are 6 months away from graduation. So they Create List “StaffA_RP” for the first step, then they create a second list which inherits from list “StaffA_RP” (is set as List1), and  deletes the graduates. How to do this? Ah ha, says Staff A after consulting some very helpful help-popups. They do a dynamic search for the graduating class, and saves it as a list “Grads”. Now they create “List not_Grad” which does a dynamic search to return everyone, and inherts ”Grads” as List1, performing Boolean “XOR”. This will result in only those contacts that appear uniquely in one list (ie, the members of 'Everyone' who are not in the 'Grads' list, the inverse of 'Grads'). They also then set List2 to StaffA_RP with boolean “AND”, which gives us the desired result – everyone who is a disciple of StaffA but not graduating in the near future.
+Perhaps a bit complex for most users of the CMT to master? Perhaps, but don't underestimate the power of a few wiki tutorial pages and a self-teaching user community.
+
+Question: What about circular referencing? What if Staff A in combining these lists, made a mistake and added in List “Final” (Leo's final meta-list)? =========
+List “Final” already includes Staff A's selection, so we could doom the computer to an infinite loop.
+
+Yes we could simply have the server time out and return an error, but there's a more robust and elegant solution.
+When the server compiles a list (ie the national director requests the result of List “Final”), it recurses down the chain of included lists. However in doing so, we maintain a hash. Every time a list is mentioned, we enter it into our Hash.
+Step 1: Director requests List “Final”, Hash now contains {“Final”}
+Step 2: Server calls up List D and C, Hash now contains {“Final”,”D”,”C”}
+Step 3: Server in determining List D, calls up List A and B, Hash now contains {“Final”,”D”,”C”, “A”,”B”}
+Step 4: Due to Staff A's mistake, List A calls up List StaffA_RP and  Final. The server, seeing that Final already exists in the Hash, ignores this request (raising a non-fatal error “Circular referencing detected”), but goes ahead to include StaffA_RP.
+Step 5: The results of StaffA_RP are put into a static array containing UserIDs. This is then bubbled back up to List D, which combines the static results of List A and B. Then that is bubbled up to Final which combines the static array results of List D and C.
+
+Maintainability:
+===============
+These lists contain combinations of intermediate lists, some which we might want regular access to (eg “Final” and “List A”), others which are ugly intermediate steps we'd rather not have  to see on our listing of lists (eg “List D”, “StaffA_RP”, “Grads”). When saving a new list, we should provide the option to “Hide” these intermediate lists. The default listing of lists doesn't reveal the hidden lists, unless requested. Now we can also clean up these intermediate lists if they are no longer needed. If List A is deleted, the server could realise that List A utilised List StaffA_RP. It does a quick search, determines that no-one else is using StaffA_RP, so since StaffA_RP is hidden, it is deleted along with List A.
+
+Justification:
+=============
+while the basic infrastructure for List functionality will take some initial work, it is likely to be robust and flexible, able to serve many user-invented uses. The most obvious use would be dynamic mailing lists that include an up-to-date list of users for a given campus while still allowing users to unsubscribe.
+
+Development priorities:
+======================
+    * Create a mass-export function option to export the results of a search which returns a list of email addresses only, and puts them in the clipboard for easy pasting. Priority: HIGH
+    * Create basic list functionality: MED
+    * Create list hide attribute, and maintainability functionality: LOW
+    * Create an attribute on a user profile “Would you call yourself a follower of Jesus?” (default on new account creation = yes), internal attribute name: “Christian”. Priority: LOW
+
+
+
+* KISS is short for Keep It Simple Stupid. Good maintainable software is built in the simplest way possible. Rather than creating tools and options for everything, we try to build robust versitile features that users can ingeniously cobble together to achieve new functionality they so choose. 
