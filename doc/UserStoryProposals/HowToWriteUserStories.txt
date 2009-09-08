@@ -1,0 +1,22 @@
+User stories
+============
+
+1)	Detailing a user story helps explain the context and justification for your idea. It's application (or lack thereof) will be obvious to all 
+2)	Unforseen overlaps with existing or other planned work can be more readily identified (this is the main aspect I want to expose as the project manager)
+3)	Any functionality to be built needs to be described in detail anyway if programmers are going to be able to do the job properly. So it actually isn't introducing any new work.
+4)	The process of detailing helps form the user and developer documentation for the code that helps make our project friendly to newcomers.
+
+How to write user stories
+=========================
+A user story is simply that – a story told from the perspective of a fictional user detailing some real life scenarios that necessitate the feature you are describing. The best user stories go into technical detail explaining what would be taking place behind the scenes. This detailing of the mechanics allows the community to describe alternatives and collaborate on the best pseudo code before a developer begins to code.
+
+What I would like to see in our user stories:
+============================================
+1.	Detail one or more scenarios. Make sure you use realistic examples, if you can't demonstrate realistic examples of use, then there's a good chance the feature may never be... uh, realistic.
+
+
+2.	Write a summary justification. There's lots of features people would like, but the best software is simple software. Is your feature just a nice idea, or will it double our stock price? 
+
+3.	Write a developer priority list. Many features could have bells and whistles, polish and spit, or do 70% of what is needed with 20% of the effort. What is a way to build your feature with 20% effort that will get the general concept out there for people to play with and start refining?   
+
+4.	Post your proposal on the developers mailing list (this one) and also add it to the repository docs folder as plain text. Repo archiving allows good wiki functionality and convenient access of documentation to developers. 
