@@ -37,15 +37,16 @@ class User < ActiveRecord::Base
   end
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
   def self.authenticate(login, plain_password)
-    u = find(:first, :conditions => _(:username) + " = '#{login}'")
+    u = find(:first, :conditions => _(:old_username) + " = '#{login}'")
     u && u.authenticated?(plain_password) ? u : nil
   end
 
   # Encrypts some data with the salt.
+  # Changed for SL Intranet legacy passwords
   def self.encrypt(plain_password)
-    md5_password = Digest::MD5.digest(plain_password)
-  	base64_password = Base64.encode64(md5_password).chomp
-  	base64_password
+    md5_password = Digest::MD5.hexdigest(plain_password)
+  	#base64_password = Base64.encode64(md5_password).chomp
+  	#base64_password
   end
 
   # Encrypts the password with the user salt
