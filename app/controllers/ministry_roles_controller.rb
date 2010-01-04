@@ -33,6 +33,7 @@ class MinistryRolesController < ApplicationController
   end
   
   def show
+    xml_options = {}
     if params[:person_id] || params[:guid]
       if params[:guid]
         @user = User.find(:first, :conditions => {_(:guid, :user) => params[:guid]}, :include => :person)
@@ -40,14 +41,27 @@ class MinistryRolesController < ApplicationController
       else
         @person = Person.find(params[:person_id])
       end
-      @ministry = Ministry.find(params[:ministry_id])
-      if @person && @ministry
-        mi = MinistryInvolvement.find(:first, :conditions => {:person_id => @person.id, :ministry_id => @ministry.id})
-        @ministry_role = mi.ministry_role
+      if params[:ministry_id]
+        @ministry = Ministry.find(params[:ministry_id])
+      end
+      if @person
+        if @ministry
+            mi = MinistryInvolvement.find(:first, :conditions => {:person_id => @person.id, :ministry_id => @ministry.id})
+            @ministry_role = mi.ministry_role
+        else
+            # output list of roles if no ministry id specified
+            # Create hash so we can get ministry role types
+            xml_options = {:root => "ministry_roles"}
+            @ministry_role = Hash.new
+            mr = MinistryRole.find(:all, :joins => :ministry_involvements, :conditions => { :ministry_involvements => {:person_id => @person.id}})
+            mr.each do |row|
+                @ministry_role.merge! (row.type.to_s.underscore.dasherize => row)
+            end
+        end
         if @ministry_role
           respond_to do |wants|
             # wants.html { render @ministry_role.to_xml }
-            wants.xml { render :xml => @ministry_role.to_xml }
+            wants.xml { render :xml => @ministry_role.to_xml(xml_options) }
           end
           return
         end
