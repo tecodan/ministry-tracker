@@ -1,0 +1,4 @@
+page[:web_link].replace_html :partial => 'form'
+page[:web_link].blind_down
+page[:spinner].hide
+page[:add_link].hide

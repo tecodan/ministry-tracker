@@ -1,0 +1,19 @@
+<div id="form_div">
+  <%- if @web_link.new_record? 
+    path = web_links_path
+    method = :post -%>
+  <h4>New Web resource</h4>
+  <%- else 
+    path = web_link_path(@web_link)
+    method = :put -%>
+  <h4>Editing <%= @web_link.name %></h4>
+  <%- end -%>
+<%- remote_form_for :web_link, @web_link, :url => path, :method => method do |f| -%>
+  <p><%= f.label :name %> <%= f.text_field :name %></p>
+  <p><%= f.label :url	 %> <%= f.text_field :url, :size => 80 %></p>
+  <p><%= f.label :description %> <%= f.text_field :description, :size => 80 %></p>
+  <p><%= f.label :permissions %>
+  	<%=  %><%= select_tag "web_link[permissions]", options_from_collection_for_select(possible_roles, 'id', 'name', @web_link.permissions), { :multiple => true, :size => 5 } %></p>
+    <p><%= submit_tag 'Save' %> or <%= link_to_function('cancel', "$('#form_div').parent().hide();$('#add_link').show()", :class => 'cancel') %>
+<%- end -%>
+</div>

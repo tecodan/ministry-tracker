@@ -1,0 +1,17 @@
+<%= stylesheet_link_tag "web_link", :media => "all" %>
+<div class="sectionHeader">
+	<h2>Online resources</h2>
+</div>
+<ul class="weblinks" id="list">
+	<%= render :partial => 'web_links/web_link', :collection => @web_links %>
+</ul>
+<%- if @web_links.empty? -%>
+    	<p id="no_web_links">There are currently no online resources available for your ministry.</p>
+<%- end -%>
+<%- if authorized?(:new) -%>
+<div class="butAdd" id="add_link"><%= link_to_remote('Add a new online resource', :url => new_web_link_path,
+      											 	 :before => "$('#spinner').show()",
+      											 	 :method => :get)%> <%= spinner %></div>
+<%- end -%>
+    <br/>
+    <div id="web_link" style="display:none"></div>

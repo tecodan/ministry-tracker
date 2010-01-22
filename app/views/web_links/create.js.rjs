@@ -1,0 +1,3 @@
+page.insert_html :bottom, "#list", :partial => 'web_link', :locals => {:web_link => @web_link}
+page[:web_link].hide
+page[:add_link].show

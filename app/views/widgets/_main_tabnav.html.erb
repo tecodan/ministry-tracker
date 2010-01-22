@@ -55,6 +55,14 @@ render_tabnav :main,
   #   t.titled 'Where you should be right now'
   # end if @groups.size > 0
   
+  if Cmt::CONFIG[:web_links_tab_enabled]
+	  add_tab do |t|
+	   t.named 'Resources'
+	   t.titled 'Useful online resources'
+	   t.links_to :controller => 'web_links'
+	  end
+  end
+  
   add_tab do |t|
    t.named 'My Profile'
    t.titled "You're special"
@@ -75,7 +83,8 @@ render_tabnav :main,
    t.named 'Dashboard'
    t.titled 'This is your Dashboard'
    t.links_to :controller => 'dashboard'
-  end 
+  end
+  
   
   
   #  

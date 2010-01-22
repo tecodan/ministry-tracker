@@ -1,0 +1,15 @@
+ul.weblinks {
+	margin: 50px;
+}
+
+ul.weblinks li {
+	list-style-image:url('http://www.ccca.org.au/images/M_images/weblink.png'); 
+}
+
+span.resource_title {
+	font-weight: bold;
+}
+
+form select {
+	height: 100px;
+	}

@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :web_links
+
   map.resources :involvement_histories
 
   map.resources :emails

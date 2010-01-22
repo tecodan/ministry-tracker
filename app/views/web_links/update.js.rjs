@@ -1,0 +1,2 @@
+page[dom_id(@web_link)].replace :partial => 'web_link', :locals => {:web_link => @web_link}
+page[dom_id(@web_link)].highlight
