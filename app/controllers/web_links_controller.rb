@@ -1,5 +1,5 @@
 class WebLinksController < ApplicationController
-  before_filter :find_web_link, :only => [:edit, :update, :destroy, :permissions]
+  before_filter :find_web_link, :only => [:edit, :update, :destroy, :permissions, :visit]
   # GET /web_links
   # GET /web_links.xml
   def index
@@ -60,9 +60,14 @@ class WebLinksController < ApplicationController
   # DELETE /web_links/1
   # DELETE /web_links/1.xml
   def destroy
-    @web_link = WebLink.find(params[:id])
     @web_link.destroy
     render :nothing => true
+  end
+  
+  def visit
+    me = get_person
+    WebLinkClick.record_visit(params[:id], me.id)
+    redirect_to(@web_link.url)
   end
   
   protected

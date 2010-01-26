@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100121230846) do
+ActiveRecord::Schema.define(:version => 20100124022340) do
 
   create_table "addresses", :force => true do |t|
     t.integer "person_id"
@@ -525,8 +525,10 @@ ActiveRecord::Schema.define(:version => 20100121230846) do
     t.boolean  "developer"
     t.string   "facebook_hash"
     t.string   "facebook_username"
-    t.string   "old_username",              :null => false
+    t.string   "old_username"
   end
+
+  add_index "users", ["guid"], :name => "index_users_on_guid", :unique => true
 
   create_table "view_columns", :force => true do |t|
     t.string   "view_id"
@@ -547,6 +549,12 @@ ActiveRecord::Schema.define(:version => 20100121230846) do
     t.boolean  "default_view"
     t.string   "select_clause", :limit => 2000
     t.string   "tables_clause", :limit => 2000
+  end
+
+  create_table "web_link_clicks", :force => true do |t|
+    t.integer  "person_id"
+    t.integer  "web_link_id"
+    t.datetime "updated_at"
   end
 
   create_table "web_links", :force => true do |t|
