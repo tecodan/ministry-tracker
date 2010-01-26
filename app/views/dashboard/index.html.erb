@@ -156,6 +156,29 @@ this system, along with any other information we think would be helpful to you.<
       </div>
     </div>
   
+    <%- if Cmt::CONFIG[:web_links_dashboard_widget_enabled] -%>
+    <div class="dashmodule">
+      <div class="moduletitle">
+        <h2>Recently visited</h2>
+        <div class="modulecontrols">
+          <a href="" class="minmodule"></a>
+          <a href="" class="movemodule"></a>
+          <a href="" class="closemodule"></a>
+        </div>
+      </div>
+      <div class="modulecontent">
+        <ul>
+          <% @person.recently_visited_web_links.each do |web_link| %>
+              <li><%= link_to web_link.name, visit_web_link_path(:id => web_link.id) %></li>
+            <% end %>
+          <%- if @person.recently_visited_web_links.empty? -%>
+    	     <li id="no_web_links">No recently viewed resources</li>
+          <%- end -%>
+        </ul>
+      </div>
+    </div>
+    <%- end -%>
+    
   <div class="clear"></div>
   
   </div><!-- col 1 -->

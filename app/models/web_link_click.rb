@@ -1,4 +1,6 @@
 class WebLinkClick < ActiveRecord::Base
+	belongs_to :web_link
+	
     def self.record_visit(web_link_id, person_id)
         web_link_click = WebLinkClick.first(:conditions => {:web_link_id => web_link_id, :person_id => person_id})
         if web_link_click.nil?

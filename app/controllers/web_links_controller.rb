@@ -1,5 +1,7 @@
 class WebLinksController < ApplicationController
   before_filter :find_web_link, :only => [:edit, :update, :destroy, :permissions, :visit]
+  before_filter :authorization_filter, :except => [:index, :visit]
+  
   # GET /web_links
   # GET /web_links.xml
   def index
@@ -74,4 +76,6 @@ class WebLinksController < ApplicationController
   def find_web_link
     @web_link = WebLink.find(params[:id])
   end
+  
+
 end

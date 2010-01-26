@@ -53,6 +53,10 @@ class Person < ActiveRecord::Base
   has_many :group_requests, :through => :group_involvement_requests,
     :class_name => 'Group', :source => :group
   
+  # Web link visits
+  has_many :web_link_clicks, :class_name => 'WebLinkClick'
+  has_many :recently_visited_web_links, :through => :web_link_clicks, :source => :web_link, :order => "updated_at DESC", :limit => 5
+  
   def most_nested_ministry
     ministries.inject(nil) { |best, ministry|
       if best

@@ -525,10 +525,8 @@ ActiveRecord::Schema.define(:version => 20100124022340) do
     t.boolean  "developer"
     t.string   "facebook_hash"
     t.string   "facebook_username"
-    t.string   "old_username"
+    t.string   "old_username",              :null => false
   end
-
-  add_index "users", ["guid"], :name => "index_users_on_guid", :unique => true
 
   create_table "view_columns", :force => true do |t|
     t.string   "view_id"

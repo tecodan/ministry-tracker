@@ -1,5 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :web_links
+  map.resources :web_links, :member => { :visit => :get }
 
   map.resources :involvement_histories
 
