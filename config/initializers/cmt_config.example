@@ -78,7 +78,13 @@ module Cmt
     :email_subject_prefix => "[MT] ",
 
     # the from address for each outgoing email
-    :email_from_address => "noreply@ministrytracker.org"
+    :email_from_address => "noreply@ministrytracker.org",
+    
+    # When enabled, the web links mini-app is available from the tabnav
+    :web_links_tab_enabled => true,
+    
+    # When enabled, a dashboard widget will appear showing recently visited web links
+    :web_links_dashboard_widget_enabled => true
   }
 end
 
