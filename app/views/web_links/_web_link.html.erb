@@ -1,13 +1,15 @@
 <li id="<%= dom_id(web_link) %>">
     <span class="resource_title">
-    <%= link_to web_link.name, web_link.url %>
-    <%- if authorized?(:edit) -%>
+    <%= link_to web_link.name, visit_web_link_path(:id => web_link.id) %>
+    <%- if authorized?(:new) -%>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <%= link_to_remote image_tag('delete.png', :alt => "Delete this role", :title => "Delete this resource"), 
     						:url => web_link_path(web_link), 
     						:method => :delete,
     						:confirm => "Are you sure you want to delete this resource?",
     						:before => "$('##{dom_id(web_link)}').hide()" %>&nbsp;&nbsp;
+    <%- end -%>
+    <%- if authorized?(:edit) -%>
     <%- tooltip(link_to_remote(image_tag('edit.png'), :url => edit_web_link_path(web_link),
 		:before => "$('#spinner#{dom_id(web_link)}').show()",
 		:method => :get,
