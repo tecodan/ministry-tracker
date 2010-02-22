@@ -199,7 +199,6 @@ ActiveRecord::Schema.define(:version => 20100124022340) do
   end
 
   create_table "emails", :force => true do |t|
-    t.string   "salutation",          :default => "Hi"
     t.string   "subject"
     t.text     "body"
     t.text     "people_ids"

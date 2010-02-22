@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
                 :get_ministry, :current_user, :is_ministry_admin, :authorized?, :is_group_leader, :can_manage, 
 		:get_people_responsible_for
 		
-	case
+  case
   when !Cmt::CONFIG[:gcx_direct_logins] && Cmt::CONFIG[:gcx_greenscreen_directly]
     before_filter CASClient::Frameworks::Rails::Filter
   when Cmt::CONFIG[:gcx_direct_logins] || Cmt::CONFIG[:gcx_greenscreen_from_link]
@@ -90,7 +90,7 @@ class ApplicationController < ActionController::Base
       return true if is_ministry_admin(ministry, person)
       ministry ||= @ministry || get_ministry
       person ||= (@me || get_person)
-      involvement = get_ministry_involvement(ministry)
+      involvement = get_ministry_involvement(ministry, person)
       return (involvement && involvement.try(:ministry_role).is_a?(StaffRole)) || ministry.staff.include?(person) || (involvement && involvement.admin?)
     end
     
