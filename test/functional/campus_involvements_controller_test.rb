@@ -5,12 +5,61 @@ require 'campus_involvements_controller'
 class CampusInvolvementsController; def rescue_action(e) raise e end; end
 
 class CampusInvolvementsControllerTest < ActionController::TestCase
-  fixtures CampusInvolvement.table_name, MinistryInvolvement.table_name, Person.table_name, MinistryRole.table_name
 
   def setup
+    reset_campus_involvements_sequences
+    Factory(:campusinvolvement)
+
+    setup_default_user
+    Factory(:user_3)
+    Factory(:person_3)
+    Factory(:campusinvolvement_2)
+    Factory(:campusinvolvement_4)
+    Factory(:ministryinvolvement_4)
+    setup_ministry_roles
+
     @controller = CampusInvolvementsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+  end
+
+  test "new" do
+    login
+    xhr :get, :new
+
+    assert_response :success
+    assert_equal(Date.today, assigns["campus_involvement"].start_date)
+  end
+
+  test "create" do
+    login
+
+    xhr :post, :create, :campus_involvement => { :campus_id => 1 }
+    assert_equal(1, assigns["campus_involvement"].campus_id)
+    assert_equal(50000, assigns["campus_involvement"].person_id)
+    assert_equal(true, assigns["updated"])
+
+    xhr :post, :create, :campus_involvement => { :campus_id => 2 }
+    assert_equal(2, assigns["campus_involvement"].campus_id)
+    assert_equal(50000, assigns["campus_involvement"].person_id)
+    assert_equal(false, assigns["updated"])
+
+    Factory(:campus_3)
+    Factory(:campusinvolvement_7)
+
+    xhr :post, :create, :campus_involvement => { :campus_id => 3, :school_year_id => 1 }
+    assert_equal(nil, assigns["campus_involvement"].end_date)
+    assert_equal(Date.today, assigns["campus_involvement"].last_history_update_date)
+    assert_equal(false, assigns["updated"])
+  end
+
+  test "edit" do
+    login
+
+    xhr :post, :edit, :id => 1003
+
+    assert_not_nil(assigns["campus_involvement"])
+    assert_not_nil(assigns["ministry_involvement"])
   end
 
   test "destroy with permission" do
@@ -46,6 +95,13 @@ class CampusInvolvementsControllerTest < ActionController::TestCase
     assert_equal(histories_after, histories_before)
   end
 
+  test "update student campus involvement ministry role being updated" do
+    login 'sue@student.org'
+
+    xhr :post, :update, :id => 1002, :person_id => 2000, :campus_involvement => { :school_year_id => 1}, :ministry_involvement => { :ministry_role_id => 7 }
+    assert_equal(7, ::CampusInvolvement.all(1002).first.find_or_create_ministry_involvement.ministry_role_id)
+  end
+
   test "update student campus involvement first involvement" do
     login 'sue@student.org'
     assert_difference "Person.find(2000).involvement_history.count", 1 do
@@ -73,4 +129,5 @@ class CampusInvolvementsControllerTest < ActionController::TestCase
     assert_equal(Date.parse('2009-10-20'), history.start_date)
     assert_equal(Date.today, history.end_date)
   end
+
 end

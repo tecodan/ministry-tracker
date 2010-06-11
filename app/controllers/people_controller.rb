@@ -16,7 +16,7 @@ class PeopleController < ApplicationController
   free_actions = [:set_current_address_states, :set_permanent_address_states,  
                   :get_campus_states, :set_initial_campus, :get_campuses_for_state]
   skip_before_filter :authorization_filter, :only => free_actions
-  skip_before_filter :force_campus_set, :only => free_actions
+  skip_before_filter :force_required_data, :only => free_actions
   
   #  AUTHORIZE_FOR_OWNER_ACTIONS = [:edit, :update, :show, :import_gcx_profile, :getcampuses,
   #                                 :get_campus_states, :set_current_address_states,
@@ -213,7 +213,7 @@ class PeopleController < ApplicationController
 	   		conditions[1] << name+'%' 
 	   	end
 	   	if params[:filter_ids].present?
-	   	  conditions[0] << "#{_(:id, :person)} NOT IN(?)"
+	   	  conditions[0] << "#{Person.table_name}.#{_(:id, :person)} NOT IN(?)"
 	   	  conditions[1] << params[:filter_ids]
    	  end
    	  
@@ -254,6 +254,11 @@ class PeopleController < ApplicationController
       format.html { render :action => :show }# show.rhtml
       format.xml  { render :xml => @person.to_xml }
     end
+  end
+  
+  def me
+    @person = current_user.person
+    show
   end
   
   def setup_new
@@ -473,7 +478,7 @@ class PeopleController < ApplicationController
       if ministry_campus
         ministry = ministry_campus.ministry
       else
-        ministry = Cmt::CONFIG[:default_ministry_name]
+        ministry = Ministry.find(:first, :conditions => { :name => Cmt::CONFIG[:default_ministry_name] })
         ministry ||= Ministry.first
         throw "add some ministries" unless ministry
       end
