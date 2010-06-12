@@ -88,6 +88,9 @@ module Cmt
     
     # When enabled, a dashboard widget will appear showing recently visited web links
     :web_links_dashboard_widget_enabled => true
+
+    # allow impersonating someone - don't turn this on unless you're in a dev environment
+    :allow_impersonate => false
   } unless defined?(CONFIG)
 end
 
