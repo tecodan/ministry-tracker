@@ -9,10 +9,10 @@ require 'rake/rdoctask'
 
 require 'tasks/rails'
 
-begin
-  require 'tasks/facebooker'
-rescue
-end
+# begin
+#  require 'tasks/facebooker'
+# rescue
+# end
 
 # require 'rubygems'
 # require "deep_test/rake_tasks"
