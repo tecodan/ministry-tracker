@@ -51,6 +51,7 @@ class Person < ActiveRecord::Base
         ministry
       end
     }
+  end
               
   def custom_value_hash
     if @custom_value_hash.nil?
@@ -75,7 +76,6 @@ class Person < ActiveRecord::Base
   def get_value(attribute_id)
     get_custom_value_hash
     return @custom_value_hash[attribute_id]
->>>>>>> upstream/dev
   end
 
   def get_training_answer(question_id)
